@@ -10,6 +10,7 @@ class Product(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Цена")
     sku = models.CharField(max_length=50, unique=True, verbose_name="Артикул")
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата создания")
+    stock = models.IntegerField(default=0)
 
     def __str__(self):
         return self.name
@@ -23,6 +24,9 @@ class Product(models.Model):
         
         if Product.objects.filter(sku=self.sku).exclude(pk=self.pk).exists():
             raise ValidationError({'sku': 'Товар с таким артикулом уже существует.'})
+        
+        if self.stock is not None and self.stock < 0:
+            raise ValidationError({'stock': 'Количество на складе не должно быть отрицательным'})
         
     def save(self, *args, **kwargs):
         self.full_clean()

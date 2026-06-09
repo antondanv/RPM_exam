@@ -1,4 +1,17 @@
-import time
+import logging
+import os
+from django.conf import settings
+
+logger = logging.getLogger("metrics")
+logger.setLevel(logging.INFO)
+
+if not logger.handlers:
+    log_path = os.path.join(settings.BASE_DIR, "metrics.log")
+    file_handler = logging.FileHandler(log_path, encoding="utf-8")
+    formatter = logging.Formatter("%(asctime)s - %(message)s")
+    file_handler.setFormatter(formatter)
+    logger.addHandler(file_handler)
+    logger.propagate = False
 
 class MetricsMiddleware:
     def __init__(self, get_response):
@@ -30,7 +43,10 @@ class MetricsMiddleware:
         return response
     
     def _log_metrics(self):
-        print("=== METRICS ===")
-        print(f"Total requests: {self.total_requests}")
-        print(f"2xx: {self.status_2xx}, 4xx: {self.status_4xx}, 5xx: {self.status_5xx}")
-        print("===============")
+        logger.info(
+            "Total requests: %d | 2xx: %d, 4xx: %d, 5xx: %d",
+            self.total_requests,
+            self.status_2xx,
+            self.status_4xx,
+            self.status_5xx,
+        )

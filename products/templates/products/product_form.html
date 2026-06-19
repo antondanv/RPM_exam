@@ -4,8 +4,7 @@
 {% else %}Создание{% endif%}
 {% endblock %}
 {% block content %}
-<h1>{% if product %}Редактирование товара{% else %}Новый товар{% endif
-    %}</h1>
+<h1>{% if product %}Редактирование товара{% else %}Новый товар{% endif %}</h1>
 <form method="post">
     {% csrf_token %}
     {{ form.as_p }}
